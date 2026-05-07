@@ -41,9 +41,11 @@ function buildSubdistFilter(prov, dist) {
 // ─── CASCADE EVENT LISTENERS ──────────────────
 document.getElementById('provFilter').addEventListener('change', function() {
   buildDistrictFilter(this.value);
+  applyFilter();
 });
 document.getElementById('distFilter').addEventListener('change', function() {
   buildSubdistFilter(document.getElementById('provFilter').value, this.value);
+  applyFilter();
 });
 
 // ─── APPLY FILTER ─────────────────────────────

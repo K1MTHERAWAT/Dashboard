@@ -6,9 +6,9 @@ function initDashboard(data) {
   populateVehicleFilter(data);
   populateYearFilter(data);
   buildDistrictFilter('');
-  // date inputs start empty — flatpickr initialises with no date by default
   updateStatus(true, data.length);
   renderAll(data);
+  setTimeout(function() { map.invalidateSize(); }, 100);
 }
 
 // ─── RENDER ALL PANELS ────────────────────────

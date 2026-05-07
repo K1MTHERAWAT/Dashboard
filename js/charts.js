@@ -38,7 +38,9 @@ function renderPie(data) {
   document.getElementById('pieLegend').innerHTML = labels.map((l, i) =>
     `<div class="legend-item">` +
       `<div class="legend-color" style="background:${colors[i]}"></div>` +
-      `<span title="${l}">${l.length > 14 ? l.slice(0, 13) + '…' : l}</span>` +
+      `<span class="legend-name">${l}</span>` +
+      `<span class="legend-count">${vals[i].toLocaleString()}</span>` +
+      `<span class="legend-pct">${((vals[i] / total) * 100).toFixed(1)}%</span>` +
     `</div>`
   ).join('');
 }

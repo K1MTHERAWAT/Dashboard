@@ -162,7 +162,8 @@
     background: var(--panel2);
     border-bottom: 1px solid var(--border);
     padding: 14px 32px;
-    display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+    display: flex; align-items: center; gap: 16px;
+    flex-wrap: nowrap; overflow-x: auto;
   }
 
   .filter-label {
@@ -435,7 +436,7 @@
   .main-grid {
     display: grid;
     grid-template-columns: 1fr 380px;
-    grid-template-rows: auto auto;
+    grid-template-rows: minmax(640px, calc(100vh - 220px));
     gap: 16px;
     padding: 20px 32px;
   }
@@ -449,7 +450,7 @@
   }
 
   .panel-header {
-    padding: 16px 20px 0;
+    padding: 16px 20px 14px;
     display: flex; align-items: center; justify-content: space-between;
   }
 
@@ -480,11 +481,13 @@
   /* MAP */
   .map-panel {
     grid-column: 1;
-    grid-row: 1 / 3;
+    grid-row: 1;
+    display: flex; flex-direction: column;
   }
 
   #map {
-    height: 580px;
+    flex: 1;
+    min-height: 400px;
     background: #0d1117;
   }
 
@@ -494,14 +497,21 @@
     grid-row: 1;
   }
 
+
+  .pie-panel { display: flex; flex-direction: column; }
+
   .pie-wrap {
-    padding: 16px 20px 20px;
+    flex: 1;
+    padding: 16px 20px 24px;
     display: flex; flex-direction: column; align-items: center;
+    justify-content: center;
+    gap: 20px;
   }
 
   #pieChart {
-    max-width: 260px;
-    max-height: 260px;
+    max-width: 320px;
+    max-height: 320px;
+    width: 100% !important;
   }
 
   /* PROVINCE BAR */
@@ -512,10 +522,15 @@
     padding: 0 32px 20px;
   }
 
-  .ts-panel { }
-  .bar-panel { }
+  .ts-panel { display: flex; flex-direction: column; }
 
-  #tsChart { height: 180px !important; }
+  .ts-chart-wrap {
+    flex: 1;
+    padding: 16px 20px 20px;
+    min-height: 0;
+  }
+
+  #tsChart { height: 100% !important; }
   #barChart { height: 420px !important; }
 
   /* loading overlay */
@@ -562,21 +577,24 @@
 
   /* Legend for pie */
   .legend {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 6px 12px;
+    display: flex; flex-direction: column;
+    gap: 5px;
     margin-top: 14px;
     width: 100%;
     padding: 0 4px;
   }
   .legend-item {
     display: flex; align-items: center; gap: 6px;
-    font-size: 11px; color: var(--muted);
+    font-size: 11px; color: var(--text);
   }
   .legend-color {
     width: 10px; height: 10px;
     border-radius: 2px;
     flex-shrink: 0;
   }
+  .legend-name  { flex: 1; }
+  .legend-count { color: var(--text); font-weight: 600; white-space: nowrap; }
+  .legend-pct   { color: var(--muted); width: 38px; text-align: right; white-space: nowrap; }
 
   /* Province tooltip */
   .prov-tooltip {
@@ -613,7 +631,7 @@
     .stat-info label { font-size: 9px; letter-spacing: 0; }
 
     /* Filter bar */
-    .filter-bar { padding: 8px 10px; gap: 8px; }
+    .filter-bar { padding: 8px 10px; gap: 8px; flex-wrap: wrap; overflow-x: visible; }
     .filter-group { flex-direction: row; align-items: center; gap: 8px; width: 100%; }
     .filter-group label { flex-shrink: 0; width: 52px; }
     .filter-group select { flex: 1; font-size: 12px; padding: 5px 8px; }
@@ -629,10 +647,12 @@
     .bottom-row { padding: 0 8px 8px; gap: 8px; }
 
     /* Map */
-    #map { height: 280px; }
+    .main-grid { grid-template-rows: auto; }
+    #map { min-height: 280px; }
 
     /* Charts */
-    #tsChart { height: 130px !important; }
+    .ts-chart-wrap { min-height: 160px; }
+    #tsChart { height: 100% !important; }
     #barChart { height: 320px !important; }
     #pieChart { max-width: 160px; max-height: 160px; }
 
@@ -647,7 +667,6 @@
     .panel-header > div { width: 100%; flex-wrap: wrap; gap: 6px; }
 
     /* Legend */
-    .legend { grid-template-columns: repeat(3,1fr); gap: 4px 8px; }
     .legend-item { font-size: 10px; }
   }
   /* Error Toast */

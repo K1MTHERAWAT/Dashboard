@@ -6,7 +6,6 @@ function showLoading(visible, msg) {
     dot.className    = 'status-dot loading';
     text.textContent = msg || 'กำลังโหลด...';
   } else {
-    dot.className    = 'status-dot';
     text.textContent = '';
   }
 }
