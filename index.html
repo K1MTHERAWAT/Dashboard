@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dashboard อุบัติเหตุทางถนน ประเทศไทย</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚨</text></svg>"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="wrapper">
+
+<!-- ── LOADING ── -->
+<div id="loadingOverlay" style="display:none">
+  <div class="spinner"></div>
+  <p id="loadingMsg" style="color:var(--muted);font-size:14px">กำลังประมวลผลข้อมูล...</p>
+</div>
+
+<!-- ── ERROR TOAST ── -->
+<div id="errorToast" style="display:none">
+  <div id="errorMsg"></div>
+  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+    <label class="fallback-btn">📂 เลือกไฟล์ CSV แทน
+      <input type="file" id="fallbackFile" accept=".csv,.xlsx,.xls" style="display:none"/>
+    </label>
+    <button onclick="hideError()" class="dismiss-btn">✕ ปิด</button>
+  </div>
+</div>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">🚨</div>
+    <div class="logo-text">
+      <h1>Road Accident Dashboard</h1>
+      <p>ระบบวิเคราะห์อุบัติเหตุทางถนน ประเทศไทย</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div id="statusDot" class="status-dot"></div>
+    <span id="statusText" style="font-size:12px;color:var(--muted)">กำลังโหลด...</span>
+  </div>
+</header>
+
+<!-- ── STATS BAR ── -->
+<div class="stats-bar">
+  <div class="stat-card">
+    <div class="stat-icon" style="background:rgba(239,68,68,.15)">💀</div>
+    <div class="stat-info">
+      <label>ยอดผู้เสียชีวิตจากอุบัติเหตุทั้งหมด</label>
+      <div class="val" id="statTotal" style="color:var(--accent2)">—</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:rgba(250,204,21,.15)">📍</div>
+    <div class="stat-info">
+      <label>จังหวัดสูงสุด</label>
+      <div class="val" id="statTopProv" style="color:var(--accent3);font-size:20px">—</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon" style="background:rgba(34,211,238,.15)">🚗</div>
+    <div class="stat-info">
+      <label>ยานพาหนะหลัก</label>
+      <div class="val" id="statTopVehicle" style="color:var(--teal);font-size:20px">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FILTER BAR ── -->
+<div class="filter-bar">
+  <span class="filter-label">🔎 กรองข้อมูล</span>
+  <div class="filter-group">
+    <label style="font-size:12px;color:var(--muted)">ปี</label>
+    <select id="yearFilter"><option value="">ทั้งหมด</option></select>
+  </div>
+
+  <!-- ── CUSTOM DATE RANGE PICKER ── -->
+  <div class="filter-group cal-wrapper">
+    <label style="font-size:12px;color:var(--muted)">ช่วงวันที่</label>
+    <div class="date-range-btn" id="dateRangeDisplay" onclick="toggleCalendar()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.5;flex-shrink:0"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span id="dateRangeText">เลือกช่วงวันที่</span>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:.4;flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <!-- calendar popup -->
+    <div class="cal-popup" id="calPopup">
+      <div class="cal-header">
+        <button class="cal-nav" onclick="prevMonth();event.stopPropagation()">&#8249;</button>
+        <div class="cal-selects">
+          <select id="calMonthSel" onclick="event.stopPropagation()">
+            <option value="0">มกราคม</option>
+            <option value="1">กุมภาพันธ์</option>
+            <option value="2">มีนาคม</option>
+            <option value="3">เมษายน</option>
+            <option value="4">พฤษภาคม</option>
+            <option value="5">มิถุนายน</option>
+            <option value="6">กรกฎาคม</option>
+            <option value="7">สิงหาคม</option>
+            <option value="8">กันยายน</option>
+            <option value="9">ตุลาคม</option>
+            <option value="10">พฤศจิกายน</option>
+            <option value="11">ธันวาคม</option>
+          </select>
+          <select id="calYearSel" onclick="event.stopPropagation()">
+            <option>2011</option><option>2012</option><option>2013</option>
+            <option>2014</option><option>2015</option><option>2016</option>
+            <option>2017</option><option>2018</option><option>2019</option>
+            <option>2020</option><option>2021</option><option>2022</option>
+            <option>2023</option><option>2024</option><option>2025</option>
+          </select>
+        </div>
+        <button class="cal-nav" onclick="nextMonth();event.stopPropagation()">&#8250;</button>
+      </div>
+
+      <div class="cal-weekdays">
+        <div>จ</div><div>อ</div><div>พ</div><div>พฤ</div><div>ศ</div><div>ส</div><div>อา</div>
+      </div>
+
+      <div class="cal-dates" id="calDates"></div>
+
+      <div class="cal-footer">
+        <button class="cal-btn cal-btn--clear" onclick="clearCalendar();event.stopPropagation()">ล้าง</button>
+        <button class="cal-btn cal-btn--apply" onclick="applyCalendar();event.stopPropagation()">ใช้งาน</button>
+      </div>
+    </div>
+  </div>
+  <!-- hidden inputs for filter logic -->
+  <input type="hidden" id="dateStart"/>
+  <input type="hidden" id="dateEnd"/>
+
+  <div class="filter-group">
+    <label style="font-size:12px;color:var(--muted)">จังหวัด</label>
+    <select id="provFilter"><option value="">ทั้งหมด</option></select>
+  </div>
+  <div class="filter-group">
+    <label style="font-size:12px;color:var(--muted)">ยานพาหนะ</label>
+    <select id="vehicleFilter"><option value="">ทั้งหมด</option></select>
+  </div>
+  <div class="filter-group">
+    <label style="font-size:12px;color:var(--muted)">อำเภอ</label>
+    <select id="distFilter"><option value="">ทั้งหมด</option></select>
+  </div>
+  <div class="filter-group">
+    <label style="font-size:12px;color:var(--muted)">ตำบล</label>
+    <select id="subdistFilter"><option value="">ทั้งหมด</option></select>
+  </div>
+  <button class="apply-btn" onclick="applyFilter()">ใช้ตัวกรอง</button>
+  <button class="reset-btn"  onclick="resetFilter()">รีเซ็ต</button>
+</div>
+
+<!-- ── MAIN GRID ── -->
+<div class="main-grid">
+  <div class="panel map-panel">
+    <div class="panel-header">
+      <div class="panel-title">
+        <div class="panel-dot"></div>
+        <h2>แผนที่ Hotspot อุบัติเหตุทางถนน</h2>
+      </div>
+      <span class="panel-badge" id="mapCount">0 จุด</span>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <div class="panel pie-panel">
+    <div class="panel-header" style="padding-bottom:0">
+      <div class="panel-title">
+        <div class="panel-dot" style="background:var(--teal)"></div>
+        <h2>ปัจจัยที่ทำให้เกิดอุบัติเหตุทางถนน</h2>
+      </div>
+    </div>
+    <div class="pie-wrap">
+      <canvas id="pieChart"></canvas>
+      <div class="legend" id="pieLegend"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── BOTTOM ROW ── -->
+<div class="bottom-row">
+  <div class="panel ts-panel">
+    <div class="panel-header">
+      <div class="panel-title">
+        <div class="panel-dot" style="background:var(--accent3)"></div>
+        <h2>แนวโน้มอุบัติเหตุตามช่วงเวลา (Time Series)</h2>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="ts-toggle">
+          <button id="btnYearly"  class="ts-btn"        onclick="setTsMode('yearly')">รายปี</button>
+          <button id="btnMonthly" class="ts-btn active" onclick="setTsMode('monthly')">รายเดือน</button>
+          <button id="btnDaily"   class="ts-btn"        onclick="setTsMode('daily')">รายวัน</button>
+        </div>
+        <select id="tsYearSel">
+          <option value="">-- เลือกปี --</option>
+        </select>
+        <select id="tsMonthSel" style="display:none">
+          <option value="">-- เลือกเดือน --</option>
+        </select>
+      </div>
+    </div>
+    <div style="padding:16px 20px 20px">
+      <canvas id="tsChart"></canvas>
+    </div>
+  </div>
+
+  <div class="panel bar-panel">
+    <div class="panel-header">
+      <div class="panel-title">
+        <div class="panel-dot" style="background:var(--accent2)"></div>
+        <h2>จังหวัดที่มีผู้เสียชีวิตสูงสุด</h2>
+      </div>
+      <span class="panel-badge" id="provCount">Top 15</span>
+    </div>
+    <div class="bar-scroll-wrap">
+      <canvas id="barChart"></canvas>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrapper -->
+
+<!-- ── VENDOR LIBS ── -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<!-- ── APP MODULES (load order matters) ── -->
+<script src="js/config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/map.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/filters.js"></script>
+<script src="js/loader.js"></script>
+<script src="js/datepicker.js"></script>
+</body>
+</html>
