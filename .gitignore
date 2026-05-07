@@ -1,0 +1,8 @@
+# Data files (uploaded to Supabase already)
+*.csv
+*.xlsx
+*.xls
+data/
+
+# Upload script (contains API key)
+upload_to_supabase.py
