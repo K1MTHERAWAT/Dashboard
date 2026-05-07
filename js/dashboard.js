@@ -16,7 +16,7 @@ function renderAll(data) {
   updateStats(data);
   renderHeatmap(data);
   renderPie(data);
-  renderTimeSeries(data);
+  renderTimeSeries(rawData);  // Time Series แสดงข้อมูลทั้งหมดเสมอ ไม่ถูก filter
   renderBar(data);
 }
 
