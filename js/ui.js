@@ -1,7 +1,14 @@
-// ─── LOADING OVERLAY ──────────────────────────
+// ─── LOADING (header inline, ไม่บัง dashboard) ──
 function showLoading(visible, msg) {
-  document.getElementById('loadingOverlay').style.display = visible ? 'flex' : 'none';
-  if (msg) document.getElementById('loadingMsg').textContent = msg;
+  var dot  = document.getElementById('statusDot');
+  var text = document.getElementById('statusText');
+  if (visible) {
+    dot.className    = 'status-dot loading';
+    text.textContent = msg || 'กำลังโหลด...';
+  } else {
+    dot.className    = 'status-dot';
+    text.textContent = '';
+  }
 }
 
 // ─── ERROR TOAST ──────────────────────────────
@@ -18,7 +25,5 @@ function hideError() {
 // ─── STATUS INDICATOR ─────────────────────────
 function updateStatus(active, count) {
   document.getElementById('statusDot').className = 'status-dot' + (active ? ' active' : '');
-  document.getElementById('statusText').textContent = active
-    ? 'โหลดแล้ว ' + count.toLocaleString() + ' รายการ'
-    : 'ยังไม่มีข้อมูล';
+  document.getElementById('statusText').textContent = active ? '' : 'ยังไม่มีข้อมูล';
 }

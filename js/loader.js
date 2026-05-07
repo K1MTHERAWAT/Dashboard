@@ -1,7 +1,56 @@
+// ─── INDEXEDDB CACHE ──────────────────────────
+var _DB_NAME = 'road_accident_cache';
+var _STORE   = 'data';
+var _KEY     = 'rows';
+var _MAX_AGE = 24 * 60 * 60 * 1000; // 24 ชั่วโมง
+
+function _openDB() {
+  return new Promise(function(resolve, reject) {
+    var req = indexedDB.open(_DB_NAME, 1);
+    req.onupgradeneeded = function(e) { e.target.result.createObjectStore(_STORE); };
+    req.onsuccess = function(e) { resolve(e.target.result); };
+    req.onerror   = function(e) { reject(e.target.error); };
+  });
+}
+
+async function _getCached() {
+  try {
+    var db = await _openDB();
+    return new Promise(function(resolve) {
+      var req = db.transaction(_STORE, 'readonly').objectStore(_STORE).get(_KEY);
+      req.onsuccess = function() { resolve(req.result || null); };
+      req.onerror   = function() { resolve(null); };
+    });
+  } catch(e) { return null; }
+}
+
+async function _setCached(data) {
+  try {
+    var db = await _openDB();
+    return new Promise(function(resolve) {
+      var tx = db.transaction(_STORE, 'readwrite');
+      tx.objectStore(_STORE).put({ data: data, ts: Date.now() }, _KEY);
+      tx.oncomplete = resolve;
+      tx.onerror    = resolve;
+    });
+  } catch(e) {}
+}
+
 // ─── SUPABASE LOADER ──────────────────────────
 async function loadFromSupabase() {
-  showLoading(true, 'กำลังเชื่อมต่อ Supabase...');
+  // ตรวจ cache ก่อน
+  showLoading(true, 'กำลังตรวจสอบ cache...');
+  var cached = await _getCached();
+  if (cached && (Date.now() - cached.ts) < _MAX_AGE) {
+    showLoading(true, 'กำลังโหลดจาก cache...');
+    rawData = cached.data;
+    initDashboard(rawData);
+    showLoading(false);
+    return;
+  }
 
+  // ไม่มี cache หรือหมดอายุ → ดึงจาก Supabase
+  showLoading(true, 'กำลังเชื่อมต่อ Supabase...');
   var client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   var all    = [];
   var from   = 0;
@@ -38,6 +87,9 @@ async function loadFromSupabase() {
     showError('<b>⚠️ ไม่พบข้อมูลใน table</b><br/>ตรวจสอบชื่อ TABLE_NAME ใน config.js<br/>หรือเลือกไฟล์โดยตรงด้านล่าง:');
     return;
   }
+
+  showLoading(true, 'กำลังบันทึก cache...');
+  await _setCached(all);
 
   rawData = all;
   initDashboard(rawData);

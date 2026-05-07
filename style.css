@@ -116,7 +116,8 @@
     background: var(--muted);
     animation: pulse2 2s infinite;
   }
-  .status-dot.active { background: #22c55e; }
+  .status-dot.active  { background: #22c55e; }
+  .status-dot.loading { background: var(--accent3); }
   @keyframes pulse2 { 0%,100%{opacity:1} 50%{opacity:.4} }
 
   /* ── STATS BAR ── */
@@ -592,6 +593,56 @@
     .map-panel { grid-column: 1; grid-row: 1; }
     .pie-panel { grid-column: 1; }
     .stats-bar { grid-template-columns: repeat(2,1fr); }
+  }
+
+  @media (max-width: 600px) {
+    /* Header */
+    header { padding: 0 16px; height: 52px; }
+    .logo-icon { width: 30px; height: 30px; font-size: 15px; }
+    .logo-text h1 { font-size: 16px; letter-spacing: 1px; }
+    .logo-text p { display: none; }
+
+    /* Stats bar */
+    .stats-bar { grid-template-columns: 1fr; }
+    .stat-card { padding: 12px 16px; gap: 12px; }
+    .stat-icon { width: 36px; height: 36px; font-size: 16px; }
+    .stat-info .val { font-size: 22px; }
+    .stat-info label { font-size: 10px; }
+
+    /* Filter bar */
+    .filter-bar { padding: 12px 16px; gap: 10px; }
+    .filter-group { flex-direction: column; align-items: flex-start; gap: 4px; width: 100%; }
+    .filter-group select { width: 100%; }
+    .date-range-btn { width: 100%; min-width: unset; }
+    .apply-btn, .reset-btn { width: 100%; text-align: center; padding: 10px; }
+    .filter-label { font-size: 11px; }
+
+    /* Calendar popup */
+    .cal-popup { width: calc(100vw - 32px); left: 0; right: 0; }
+
+    /* Main grids */
+    .main-grid { padding: 12px 12px; gap: 12px; }
+    .bottom-row { padding: 0 12px 12px; gap: 12px; }
+
+    /* Map */
+    #map { height: 320px; }
+
+    /* Charts */
+    #tsChart { height: 150px !important; }
+    #barChart { height: 360px !important; }
+    #pieChart { max-width: 200px; max-height: 200px; }
+
+    /* Panel header */
+    .panel-header { padding: 12px 14px 0; flex-wrap: wrap; gap: 6px; }
+    .panel-title h2 { font-size: 12px; }
+
+    /* TS toggle */
+    .ts-toggle { width: 100%; }
+    .ts-btn { flex: 1; text-align: center; }
+    .panel-header > div { width: 100%; flex-wrap: wrap; }
+
+    /* Legend */
+    .legend { grid-template-columns: 1fr; }
   }
   /* Error Toast */
   #errorToast {
