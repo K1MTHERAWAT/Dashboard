@@ -608,13 +608,16 @@
     .stat-card { padding: 8px; gap: 6px; flex-direction: column; align-items: center; text-align: center; justify-content: center; }
     .stat-icon { width: 28px; height: 28px; font-size: 13px; border-radius: 7px; }
     .stat-info .val { font-size: 16px; }
+    #statTopVehicle { font-size: 11px !important; }
+    #statTopProv    { font-size: 13px !important; }
     .stat-info label { font-size: 9px; letter-spacing: 0; }
 
     /* Filter bar */
     .filter-bar { padding: 8px 10px; gap: 8px; }
-    .filter-group { flex-direction: column; align-items: flex-start; gap: 3px; width: 100%; }
-    .filter-group select { width: 100%; font-size: 12px; padding: 5px 8px; }
-    .date-range-btn { width: 100%; min-width: unset; font-size: 12px; padding: 5px 8px; }
+    .filter-group { flex-direction: row; align-items: center; gap: 8px; width: 100%; }
+    .filter-group label { flex-shrink: 0; width: 52px; }
+    .filter-group select { flex: 1; font-size: 12px; padding: 5px 8px; }
+    .date-range-btn { flex: 1; min-width: unset; font-size: 12px; padding: 5px 8px; }
     .apply-btn, .reset-btn { width: 100%; text-align: center; padding: 8px; font-size: 12px; }
     .filter-label { font-size: 10px; }
 
