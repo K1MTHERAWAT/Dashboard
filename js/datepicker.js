@@ -165,6 +165,7 @@ function clearCalendar() {
 }
 
 // ─── EVENTS (delegated, set up once) ──────────
+document.addEventListener('DOMContentLoaded', function() {
 (function() {
   var wrap = document.getElementById('calDates');
 
@@ -207,3 +208,4 @@ function clearCalendar() {
     }
   });
 })();
+});
