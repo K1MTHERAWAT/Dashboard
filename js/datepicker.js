@@ -8,10 +8,19 @@ var CAL = {
 };
 
 // ─── TOGGLE ───────────────────────────────────
-function toggleCalendar() {
+function toggleCalendar(e) {
+  if (e) e.stopPropagation();
   var p = document.getElementById('calPopup');
-  if (p.classList.contains('cal-open')) { closeCalendar(); }
-  else { p.classList.add('cal-open'); renderCalendar(); }
+  if (p.classList.contains('cal-open')) { closeCalendar(); return; }
+
+  var btn  = document.getElementById('dateRangeDisplay');
+  var rect = btn.getBoundingClientRect();
+  var pw   = p.offsetWidth || 310;
+  var left = Math.min(rect.left, window.innerWidth - pw - 8);
+  p.style.top  = (rect.bottom + 8) + 'px';
+  p.style.left = Math.max(8, left) + 'px';
+  p.classList.add('cal-open');
+  renderCalendar();
 }
 
 function closeCalendar() {

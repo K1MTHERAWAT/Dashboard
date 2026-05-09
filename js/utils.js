@@ -36,6 +36,18 @@ function toInputDate(d) {
   return d.toISOString().slice(0, 10);
 }
 
+// ─── PROVINCE NORMALIZER ──────────────────────
+// Cleans dirty values in the 'Province' column (abbreviations, ASCII codes, etc.)
+var PROV_MAP = { 'กท': 'กรุงเทพมหานคร', 'กทม': 'กรุงเทพมหานคร', 'bkk': 'กรุงเทพมหานคร' };
+function normProv(v) {
+  v = (v || '').trim();
+  var mapped = PROV_MAP[v] || PROV_MAP[v.toLowerCase()];
+  if (mapped) return mapped;
+  if (v.length < 3) return '';          // too short to be a real province
+  if (/^[a-zA-Z]/.test(v)) return '';  // starts with ASCII → invalid
+  return v;
+}
+
 // ─── AGGREGATION HELPER ───────────────────────
 // countBy(rows, keyFn) → { key: count } sorted desc
 function countBy(rows, keyFn) {

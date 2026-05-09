@@ -164,6 +164,7 @@
     padding: 14px 32px;
     display: flex; align-items: center; gap: 16px;
     flex-wrap: nowrap; overflow-x: auto;
+    position: relative; z-index: 200;
   }
 
   .filter-label {
@@ -209,14 +210,10 @@
   #dateRangeText { flex: 1; }
 
   /* ── CALENDAR POPUP ── */
-  .cal-wrapper { position: relative; }
-
   .cal-popup {
     display: none;
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    z-index: 500;
+    position: fixed;
+    z-index: 9999;
     width: 310px;
     background: var(--panel2);
     border: 1px solid var(--border);
@@ -640,7 +637,7 @@
     .filter-label { font-size: 10px; }
 
     /* Calendar popup */
-    .cal-popup { width: calc(100vw - 24px); left: 0; right: 0; }
+    .cal-popup { width: calc(100vw - 24px); }
 
     /* Main grids */
     .main-grid { padding: 8px; gap: 8px; }

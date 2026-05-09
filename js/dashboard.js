@@ -38,13 +38,11 @@ function updateStats(data) {
 function buildHierMap(data) {
   hierMap = {};
   data.forEach(function(r) {
-    var prov = (r[COL.hierProv]    || '').trim();
     var dist = (r[COL.district]    || '').trim();
     var sub  = (r[COL.subdistrict] || '').trim();
-    if (!prov || !dist) return;
-    if (!hierMap[prov])       hierMap[prov] = {};
-    if (!hierMap[prov][dist]) hierMap[prov][dist] = new Set();
-    if (sub) hierMap[prov][dist].add(sub);
+    if (!dist) return;
+    if (!hierMap[dist]) hierMap[dist] = new Set();
+    if (sub) hierMap[dist].add(sub);
   });
 }
 

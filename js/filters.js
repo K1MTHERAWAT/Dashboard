@@ -1,34 +1,30 @@
 // ─── CASCADE: DISTRICT ────────────────────────
 function buildDistrictFilter(prov) {
-  var dists = !prov
-    ? [...new Set(Object.values(hierMap).flatMap(d => Object.keys(d)))].sort()
-    : Object.keys(hierMap[prov] || {}).sort();
+  var dists;
+  if (!prov) {
+    dists = [...new Set(Object.keys(hierMap))].sort();
+  } else {
+    dists = (PROV_DIST[prov] || []).filter(function(d) { return hierMap[d]; });
+    if (!dists.length) dists = (PROV_DIST[prov] || []);
+  }
 
   var sel = document.getElementById('distFilter');
   sel.innerHTML = '<option value="">ทั้งหมด</option>';
   dists.forEach(function(d) {
     var o = document.createElement('option'); o.value = o.textContent = d; sel.appendChild(o);
   });
-  buildSubdistFilter(prov, '');
+  buildSubdistFilter('');
 }
 
 // ─── CASCADE: SUBDISTRICT ─────────────────────
-function buildSubdistFilter(prov, dist) {
+function buildSubdistFilter(dist) {
   var subs;
-
-  if (!prov && !dist) {
+  if (!dist) {
     var all = new Set();
-    Object.values(hierMap).forEach(d => Object.values(d).forEach(s => s.forEach(v => all.add(v))));
+    Object.values(hierMap).forEach(function(s) { s.forEach(function(v) { all.add(v); }); });
     subs = [...all].sort();
-
-  } else if (prov && !dist) {
-    var set2 = new Set();
-    Object.values(hierMap[prov] || {}).forEach(s => s.forEach(v => set2.add(v)));
-    subs = [...set2].sort();
-
   } else {
-    var src  = prov ? (hierMap[prov] || {}) : Object.assign({}, ...Object.values(hierMap));
-    subs = [...(src[dist] || new Set())].sort();
+    subs = [...(hierMap[dist] || new Set())].sort();
   }
 
   var sel = document.getElementById('subdistFilter');
@@ -44,7 +40,7 @@ document.getElementById('provFilter').addEventListener('change', function() {
   applyFilter();
 });
 document.getElementById('distFilter').addEventListener('change', function() {
-  buildSubdistFilter(document.getElementById('provFilter').value, this.value);
+  buildSubdistFilter(this.value);
   applyFilter();
 });
 
@@ -76,7 +72,7 @@ function applyFilter() {
       if (e && d > new Date(e + 'T23:59:59')) return false;
     }
 
-    if (pv && r[COL.province]                  !== pv) return false;
+    if (pv && (r[COL.province] || '').trim()      !== pv) return false;
     if (vh && r[COL.vehicle]                    !== vh) return false;
     if (di && (r[COL.district]    || '').trim() !== di) return false;
     if (sb && (r[COL.subdistrict] || '').trim() !== sb) return false;
