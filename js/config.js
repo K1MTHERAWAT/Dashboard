@@ -15,6 +15,7 @@ const COL = {
   date:        'Dead Date Final',
   province:    'จ.ที่เสียชีวิต',
   vehicle:     'Vehicle Merge Final',
+  vehicleai:     'Vehicle Merge Ai',
   district:    'Acc Dist',
   subdistrict: 'Acc Sub Dist',
   lat:         'Acc La',

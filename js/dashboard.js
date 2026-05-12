@@ -60,7 +60,14 @@ function populateYearFilter(data) {
   var years = [...new Set(
     data.map(r => { var d = parseDate(r[COL.date]); return d ? d.getFullYear() : null; }).filter(Boolean)
   )].sort();
-  fillSelect('yearFilter', years);
+  var sel = document.getElementById('yearFilter');
+  sel.innerHTML = '<option value="">ทั้งหมด</option>';
+  years.forEach(function(y) {
+    var o = document.createElement('option');
+    o.value = y;
+    o.textContent = y + 543;
+    sel.appendChild(o);
+  });
 }
 
 
