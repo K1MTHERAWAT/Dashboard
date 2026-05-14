@@ -52,7 +52,7 @@ function populateProvFilter(data) {
 }
 
 function populateVehicleFilter(data) {
-  var vehs = [...new Set(data.map(r => r[COL.vehicle]).filter(Boolean))].sort();
+  var vehs = [...new Set(data.map(r => normalizeVehicle(r[COL.vehicle])).filter(Boolean))].sort();
   fillSelect('vehicleFilter', vehs);
 }
 

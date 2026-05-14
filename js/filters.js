@@ -73,7 +73,7 @@ function applyFilter() {
     }
 
     if (pv && (r[COL.province] || '').trim()      !== pv) return false;
-    if (vh && r[COL.vehicle]                    !== vh) return false;
+    if (vh && normalizeVehicle(r[COL.vehicle])  !== vh) return false;
     if (di && (r[COL.district]    || '').trim() !== di) return false;
     if (sb && (r[COL.subdistrict] || '').trim() !== sb) return false;
 

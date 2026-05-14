@@ -12,8 +12,9 @@ let geoLayer  = null;
 let thaiGeoJSON = null;
 
 // Chart.js instances (destroyed & recreated on each render)
-let pieChart = null;
-let tsChart  = null;
+let pieChart  = null;
+let pieChart2 = null;
+let tsChart   = null;
 let barChart = null;
 
 // Time-series UI state

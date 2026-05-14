@@ -1,9 +1,31 @@
 // ─── SHARED CHART DEFAULTS ────────────────────
 const FONT = { family: 'Sarabun', size: 11 };
 
+// ─── VEHICLE LABEL NORMALIZER ─────────────────
+// Repair encoding artifacts then map to canonical names.
+const VEHICLE_PATTERNS = [
+  [/จักรยานยนต์|จักรยา.{0,3}ยนต์|.{0,2}จักรยานยนต์/, 'รถจักรยานยนต์'],
+  [/ไม่.{0,3}บุพาหนะ|ไม่ระบุพาหนะ/,                   'ไม่ระบุพาหนะ'],
+  [/รถยนต์/,                                             'รถยนต์'],
+  [/คนเดินเท้า/,                                         'คนเดินเท้า'],
+  [/บรรทุกขนาดเล็ก|บรรทุก.{0,4}เล็ก|เล็ก.{0,3}รถตู้/, 'รถบรรทุกขนาดเล็ก/รถตู้'],
+  [/บรรทุกหนัก/,                                         'รถบรรทุกหนัก'],
+  [/โดยสาร/,                                             'รถโดยสาร'],
+  [/เพื่อการเกษตร/,                                      'รถเพื่อการเกษตร'],
+  [/สามล้อ/,                                             'สามล้อ'],
+];
+function normalizeVehicle(v) {
+  v = (v || '').replace(/�/g, '').trim();
+  if (!v) return 'ไม่ระบุ';
+  for (var i = 0; i < VEHICLE_PATTERNS.length; i++) {
+    if (VEHICLE_PATTERNS[i][0].test(v)) return VEHICLE_PATTERNS[i][1];
+  }
+  return v;
+}
+
 // ─── PIE / DOUGHNUT ───────────────────────────
-function renderPie(data) {
-  var vMap   = countBy(data, r => (r[COL.vehicle] || '').trim() || 'ไม่ระบุ');
+function renderPieSingle(data, col, canvasId, legendId, colorMap) {
+  var vMap   = countBy(data, r => normalizeVehicle(r[col]));
   var sorted = Object.entries(vMap).sort((a, b) => b[1] - a[1]);
   var top    = sorted.slice(0, 10);
 
@@ -12,11 +34,10 @@ function renderPie(data) {
 
   var labels = top.map(x => x[0]);
   var vals   = top.map(x => x[1]);
-  var colors = COLORS.slice(0, labels.length);
+  var colors = labels.map(l => colorMap[l] || '#888888');
   var total  = vals.reduce((a, b) => a + b, 0);
 
-  if (pieChart) pieChart.destroy();
-  pieChart = new Chart(document.getElementById('pieChart'), {
+  var chart = new Chart(document.getElementById(canvasId), {
     type: 'doughnut',
     data: {
       labels,
@@ -35,7 +56,7 @@ function renderPie(data) {
     }
   });
 
-  document.getElementById('pieLegend').innerHTML = labels.map((l, i) =>
+  document.getElementById(legendId).innerHTML = labels.map((l, i) =>
     `<div class="legend-item">` +
       `<div class="legend-color" style="background:${colors[i]}"></div>` +
       `<span class="legend-name">${l}</span>` +
@@ -43,6 +64,28 @@ function renderPie(data) {
       `<span class="legend-pct">${((vals[i] / total) * 100).toFixed(1)}%</span>` +
     `</div>`
   ).join('');
+
+  return chart;
+}
+
+function renderPie(data) {
+  if (pieChart)  pieChart.destroy();
+  if (pieChart2) pieChart2.destroy();
+
+  // Build a shared label→color map so the same category gets the same color in both charts.
+  // Assign colors in order of frequency from the first (Final) column.
+  var seedMap = countBy(data, r => normalizeVehicle(r[COL.vehicle]));
+  var seedOrder = Object.keys(seedMap).sort((a, b) => seedMap[b] - seedMap[a]);
+  var colorMap = {};
+  var ci = 0;
+  seedOrder.forEach(function(l) { colorMap[l] = COLORS[ci++]; });
+  // Any label that only appears in the AI column gets the next available color
+  var aiLabels = Object.keys(countBy(data, r => normalizeVehicle(r[COL.vehicleai])));
+  aiLabels.forEach(function(l) { if (!colorMap[l]) colorMap[l] = COLORS[ci++ % COLORS.length]; });
+  colorMap['อื่นๆ'] = colorMap['อื่นๆ'] || COLORS[ci % COLORS.length];
+
+  pieChart  = renderPieSingle(data, COL.vehicle,   'pieChart',  'pieLegend',  colorMap);
+  pieChart2 = renderPieSingle(data, COL.vehicleai, 'pieChart2', 'pieLegend2', colorMap);
 }
 
 // ─── TIME SERIES ──────────────────────────────
