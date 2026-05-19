@@ -58,8 +58,7 @@ function renderPieSingle(data, col, canvasId, legendId, colorMap) {
 
   document.getElementById(legendId).innerHTML = labels.map((l, i) =>
     `<div class="legend-item">` +
-      `<div class="legend-color" style="background:${colors[i]}"></div>` +
-      `<span class="legend-name">${l}</span>` +
+      `<span class="legend-name" style="color:${colors[i]}">${l}</span>` +
       `<span class="legend-count">${vals[i].toLocaleString()}</span>` +
       `<span class="legend-pct">${((vals[i] / total) * 100).toFixed(1)}%</span>` +
     `</div>`
@@ -80,12 +79,12 @@ function renderPie(data) {
   var ci = 0;
   seedOrder.forEach(function(l) { colorMap[l] = COLORS[ci++]; });
   // Any label that only appears in the AI column gets the next available color
-  var aiLabels = Object.keys(countBy(data, r => normalizeVehicle(r[COL.vehicleai])));
+  var aiLabels = Object.keys(countBy(filteredDataAI, r => normalizeVehicle(r[COL.vehicleai])));
   aiLabels.forEach(function(l) { if (!colorMap[l]) colorMap[l] = COLORS[ci++ % COLORS.length]; });
   colorMap['อื่นๆ'] = colorMap['อื่นๆ'] || COLORS[ci % COLORS.length];
 
-  pieChart  = renderPieSingle(data, COL.vehicle,   'pieChart',  'pieLegend',  colorMap);
-  pieChart2 = renderPieSingle(data, COL.vehicleai, 'pieChart2', 'pieLegend2', colorMap);
+  pieChart  = renderPieSingle(data,          COL.vehicle,   'pieChart',  'pieLegend',  colorMap);
+  pieChart2 = renderPieSingle(filteredDataAI, COL.vehicleai, 'pieChart2', 'pieLegend2', colorMap);
 }
 
 // ─── TIME SERIES ──────────────────────────────

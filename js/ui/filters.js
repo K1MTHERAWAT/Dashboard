@@ -56,27 +56,40 @@ function applyFilter() {
   var di = document.getElementById('distFilter').value;
   var sb = document.getElementById('subdistFilter').value;
 
-  filteredData = rawData.filter(function(r) {
+  // base: year / date range / district / subdistrict (NO province)
+  function baseMatch(r) {
     var d = parseDate(r[COL.date]);
-
-    // year filter
-    if (yr) {
-      if (!d) return false;
-      if (d.getFullYear() !== parseInt(yr)) return false;
-    }
-
-    // date range filter (only when at least one bound is set)
+    if (yr && (!d || d.getFullYear() !== parseInt(yr))) return false;
     if (s || e) {
       if (!d) return false;
       if (s && d < new Date(s))               return false;
       if (e && d > new Date(e + 'T23:59:59')) return false;
     }
-
-    if (pv && (r[COL.province] || '').trim()      !== pv) return false;
-    if (vh && normalizeVehicle(r[COL.vehicle])  !== vh) return false;
     if (di && (r[COL.district]    || '').trim() !== di) return false;
     if (sb && (r[COL.subdistrict] || '').trim() !== sb) return false;
+    return true;
+  }
 
+  // top chart: all filters + vehicle via Final column
+  filteredData   = rawData.filter(function(r) {
+    if (!baseMatch(r)) return false;
+    if (pv && (r[COL.province] || '').trim() !== pv) return false;
+    if (vh && normalizeVehicle(r[COL.vehicle])   !== vh) return false;
+    return true;
+  });
+
+  // bottom chart: all filters + vehicle via AI column
+  filteredDataAI = rawData.filter(function(r) {
+    if (!baseMatch(r)) return false;
+    if (pv && (r[COL.province] || '').trim() !== pv) return false;
+    if (vh && normalizeVehicle(r[COL.vehicleai]) !== vh) return false;
+    return true;
+  });
+
+  // bar chart: all filters EXCEPT province (top-15 comparison stays meaningful)
+  filteredDataBar = rawData.filter(function(r) {
+    if (!baseMatch(r)) return false;
+    if (vh && normalizeVehicle(r[COL.vehicle]) !== vh) return false;
     return true;
   });
 
@@ -95,6 +108,8 @@ function resetFilter() {
   document.getElementById('subdistFilter').value = '';
   buildDistrictFilter('');
 
-  filteredData = rawData;
+  filteredData    = rawData;
+  filteredDataAI  = rawData;
+  filteredDataBar = rawData;
   renderAll(filteredData);
 }

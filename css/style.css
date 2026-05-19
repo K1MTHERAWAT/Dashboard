@@ -509,13 +509,14 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     min-height: 0;
   }
   .pie-section-label {
     text-align: center;
     font-size: 11px;
     color: var(--muted);
-    padding: 6px 0 0;
+    padding: 16px 0 4px;
     font-weight: 500;
     letter-spacing: .3px;
   }
@@ -527,9 +528,9 @@
   .pie-section .pie-wrap {
     flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
-    padding: 8px 16px 12px;
-    gap: 14px;
+    justify-content: center;
+    padding: 8px 20px 12px;
+    gap: 16px;
   }
   .pie-section .pie-wrap canvas {
     flex-shrink: 0;
@@ -538,7 +539,8 @@
     flex: 1;
     margin-top: 0;
     overflow-y: auto;
-    max-height: 150px;
+    max-height: 170px;
+    min-width: 0;
   }
 
   #pieChart, #pieChart2 {
@@ -620,12 +622,8 @@
     display: flex; align-items: center; gap: 6px;
     font-size: 11px; color: var(--text);
   }
-  .legend-color {
-    width: 10px; height: 10px;
-    border-radius: 2px;
-    flex-shrink: 0;
-  }
-  .legend-name  { flex: 1; }
+  .legend-color { display: none; }
+  .legend-name  { flex: 1; font-weight: 600; }
   .legend-count { color: var(--text); font-weight: 600; white-space: nowrap; }
   .legend-pct   { color: var(--muted); width: 38px; text-align: right; white-space: nowrap; }
 
