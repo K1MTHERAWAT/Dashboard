@@ -1,0 +1,81 @@
+/* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #0f172a 0%, #1a0a00 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+    position: sticky; top: 0; z-index: 1000;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 14px;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .logo-text h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .logo-text p {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .header-right {
+    display: flex; align-items: center; gap: 16px;
+  }
+
+  .refresh-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: transparent;
+    color: var(--teal);
+    border: 1px solid var(--teal);
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .refresh-btn:hover { background: rgba(34,211,238,.12); transform: translateY(-1px); }
+  .refresh-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .refresh-btn.spinning { animation: spin .7s linear infinite; }
+
+  /* progress bar */
+  #apiProgress {
+    position: fixed; top: 64px; left: 0; right: 0;
+    height: 3px;
+    background: transparent;
+    z-index: 999;
+    display: none;
+  }
+  #apiProgressBar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), var(--accent));
+    width: 0%;
+    transition: width .3s ease;
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+    animation: pulse2 2s infinite;
+  }
+  .status-dot.active  { background: #22c55e; }
+  .status-dot.loading { background: var(--accent3); }
+  @keyframes pulse2 { 0%,100%{opacity:1} 50%{opacity:.4} }

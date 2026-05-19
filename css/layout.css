@@ -1,0 +1,140 @@
+/* ── MAIN GRID ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    grid-template-rows: minmax(640px, calc(100vh - 220px));
+    gap: 16px;
+    padding: 20px 32px;
+  }
+
+/* ── PANELS (base) ── */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 16px 20px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .panel-title {
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .panel-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .panel-title h2 {
+    font-size: 14px; font-weight: 600;
+    letter-spacing: .5px;
+  }
+
+  .panel-badge {
+    font-size: 11px;
+    background: rgba(249,115,22,.15);
+    color: var(--accent);
+    border: 1px solid rgba(249,115,22,.3);
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+/* ── MAP ── */
+  .map-panel {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex; flex-direction: column;
+  }
+
+  #map {
+    flex: 1;
+    min-height: 400px;
+    background: #0d1117;
+  }
+
+/* ── BOTTOM ROW ── */
+  .bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 16px;
+    padding: 0 32px 20px;
+  }
+
+  .ts-panel { display: flex; flex-direction: column; }
+
+  .ts-chart-wrap {
+    flex: 1;
+    padding: 16px 20px 20px;
+    min-height: 0;
+  }
+
+  #tsChart { height: 100% !important; }
+  #barChart { height: 420px !important; }
+
+/* ── BAR CHART AREA ── */
+  .bar-scroll-wrap {
+    padding: 12px 20px 20px;
+    overflow-y: auto;
+    max-height: 460px;
+  }
+
+/* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .bottom-row { grid-template-columns: 1fr; }
+    .map-panel { grid-column: 1; grid-row: 1; }
+    .pie-panel { grid-column: 1; grid-row: 2; }
+    .stats-bar { grid-template-columns: repeat(2,1fr); }
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 0 12px; height: 48px; }
+    .logo-icon { width: 26px; height: 26px; font-size: 13px; border-radius: 6px; }
+    .logo-text h1 { font-size: 14px; letter-spacing: 0.5px; }
+    .logo-text p { display: none; }
+    .logo { gap: 8px; }
+
+    .stats-bar { grid-template-columns: repeat(3,1fr); }
+    .stat-card { padding: 8px; gap: 6px; flex-direction: column; align-items: center; text-align: center; justify-content: center; }
+    .stat-icon { width: 28px; height: 28px; font-size: 13px; border-radius: 7px; }
+    .stat-info .val { font-size: 16px; }
+    #statTopVehicle { font-size: 11px !important; }
+    #statTopProv    { font-size: 13px !important; }
+    .stat-info label { font-size: 9px; letter-spacing: 0; }
+
+    .filter-bar { padding: 8px 10px; gap: 8px; flex-wrap: wrap; overflow-x: visible; }
+    .filter-group { flex-direction: row; align-items: center; gap: 8px; width: 100%; }
+    .filter-group label { flex-shrink: 0; width: 78px; }
+    .filter-group select { flex: 1; font-size: 12px; padding: 5px 8px; }
+    .date-range-btn { flex: 1; min-width: unset; font-size: 12px; padding: 5px 8px; }
+    .apply-btn, .reset-btn { width: 100%; text-align: center; padding: 8px; font-size: 12px; }
+    .filter-label { font-size: 10px; }
+
+    .cal-popup { width: calc(100vw - 24px); }
+
+    .main-grid { padding: 8px; gap: 8px; }
+    .bottom-row { padding: 0 8px 8px; gap: 8px; }
+
+    .main-grid { grid-template-rows: auto; }
+    #map { min-height: 280px; }
+
+    .ts-chart-wrap { min-height: 160px; }
+    #tsChart { height: 100% !important; }
+    #barChart { height: 320px !important; }
+    #pieChart, #pieChart2 { max-width: 120px; max-height: 120px; }
+
+    .panel-header { padding: 10px 12px 0; flex-wrap: wrap; gap: 4px; }
+    .panel-title h2 { font-size: 11px; }
+    .panel-badge { font-size: 10px; padding: 1px 6px; }
+
+    .ts-toggle { width: 100%; }
+    .ts-btn { flex: 1; text-align: center; font-size: 11px; padding: 4px 6px; }
+    .panel-header > div { width: 100%; flex-wrap: wrap; gap: 6px; }
+
+    .legend-item { font-size: 10px; }
+  }

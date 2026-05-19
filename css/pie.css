@@ -1,0 +1,164 @@
+/* ── PIE PANEL (normal) ── */
+  .pie-panel {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex; flex-direction: column;
+  }
+
+  .pie-wrap {
+    flex: 1;
+    padding: 16px 20px 24px;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .pie-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
+  }
+  .pie-section-label {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    padding: 16px 0 4px;
+    font-weight: 500;
+    letter-spacing: .3px;
+  }
+  .pie-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 20px;
+  }
+  .pie-section .pie-wrap {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 20px 12px;
+    gap: 16px;
+  }
+  .pie-section .pie-wrap canvas {
+    flex-shrink: 0;
+  }
+  .pie-section .legend {
+    flex: 1;
+    margin-top: 0;
+    overflow-y: auto;
+    max-height: 170px;
+    min-width: 0;
+  }
+
+  #pieChart, #pieChart2 {
+    max-width: 150px;
+    max-height: 150px;
+    width: 150px !important;
+  }
+
+/* ── PIE BODY (wrapper for both sections) ── */
+  .pie-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+/* ── EXPAND BUTTON ── */
+  .expand-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    padding: 4px 6px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 12px;
+    transition: color .15s, background .15s;
+  }
+  .expand-btn:hover { color: var(--text); background: rgba(255,255,255,.06); }
+
+/* ── PIE PANEL EXPANDED STATE ── */
+  .pie-expand-backdrop { display: none; }
+
+  .pie-panel.is-expanded {
+    position: fixed;
+    inset: 20px;
+    z-index: 2000;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+    box-shadow: 0 8px 40px rgba(0,0,0,.8);
+  }
+  .pie-panel.is-expanded .expand-btn {
+    color: var(--text);
+    background: rgba(255,255,255,.08);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  .pie-panel.is-expanded .expand-btn:hover {
+    background: rgba(255,255,255,.14);
+  }
+  .pie-panel.is-expanded .pie-body {
+    flex-direction: row;
+    overflow: hidden;
+  }
+  .pie-panel.is-expanded .pie-divider {
+    width: 1px;
+    height: auto;
+    margin: 16px 0;
+  }
+  .pie-panel.is-expanded .pie-section {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .pie-panel.is-expanded .pie-section .pie-wrap {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 8px 24px 32px;
+    gap: 20px;
+    overflow: hidden;
+    width: 100%;
+  }
+  .pie-panel.is-expanded .pie-section .legend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    max-width: 420px;
+    max-height: 260px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .pie-panel.is-expanded .pie-section .legend .legend-item,
+  .pie-panel.is-expanded .pie-section .legend .legend-name,
+  .pie-panel.is-expanded .pie-section .legend .legend-count,
+  .pie-panel.is-expanded .pie-section .legend .legend-pct {
+    font-size: 14px;
+  }
+  .pie-panel.is-expanded #pieChart,
+  .pie-panel.is-expanded #pieChart2 {
+    max-width: clamp(260px, 42vh, 460px) !important;
+    max-height: clamp(260px, 42vh, 460px) !important;
+    width: clamp(260px, 42vh, 460px) !important;
+    flex-shrink: 0;
+  }
+  .pie-panel.is-expanded .pie-section-label {
+    font-size: 13px;
+    padding: 20px 0 6px;
+  }
