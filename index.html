@@ -20,12 +20,11 @@
 
 <!-- ── ERROR TOAST ── -->
 <div id="errorToast" style="display:none">
-  <div id="errorMsg"></div>
-  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-    <label class="fallback-btn">📂 เลือกไฟล์ CSV แทน
-      <input type="file" id="fallbackFile" accept=".csv,.xlsx,.xls" style="display:none"/>
-    </label>
-    <button onclick="hideError()" class="dismiss-btn">✕ ปิด</button>
+  <div id="errorBox">
+    <div id="errorMsg"></div>
+    <div style="margin-top:14px">
+      <button onclick="hideError()" class="dismiss-btn">✕ ปิด</button>
+    </div>
   </div>
 </div>
 
@@ -118,7 +117,14 @@
         <div class="panel-dot"></div>
         <h2>แผนที่ Hotspot อุบัติเหตุทางถนน</h2>
       </div>
-      <span class="panel-badge" id="mapCount">0 จุด</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="ts-toggle">
+          <button id="btnHeat"      class="ts-btn active" onclick="setMapMode('heat')">ความร้อน</button>
+          <button id="btnHotspot"   class="ts-btn"        onclick="setMapMode('hotspot')">แยกประเภท</button>
+          <button id="btnHotspotAI" class="ts-btn"        onclick="setMapMode('hotspotAI')">แยกประเภท AI</button>
+        </div>
+        <span class="panel-badge" id="mapCount">0 จุด</span>
+      </div>
     </div>
     <div id="map"></div>
   </div>
@@ -206,8 +212,6 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <!-- ── APP MODULES (load order matters) ── -->
 <!-- core -->

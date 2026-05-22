@@ -15,6 +15,41 @@
   .legend-count { color: var(--text); font-weight: 600; white-space: nowrap; }
   .legend-pct   { color: var(--muted); width: 38px; text-align: right; white-space: nowrap; }
 
+/* ── HOTSPOT MAP LEGEND ── */
+  .map-hotspot-legend {
+    background: rgba(11,17,32,.88);
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 11px;
+    color: #94a3b8;
+    backdrop-filter: blur(4px);
+    max-height: 220px;
+    overflow-y: auto;
+    pointer-events: auto;
+  }
+  .mhl-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #64748b;
+    margin-bottom: 6px;
+  }
+  .mhl-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0;
+  }
+  .mhl-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .mhl-name { color: #e2e8f0; }
+
 /* ── PROVINCE TOOLTIP ── */
   .prov-tooltip {
     background: #0f172a !important;
@@ -86,17 +121,6 @@
     border-radius: 4px; padding: 1px 6px;
     font-family: monospace; font-size: 13px;
   }
-  .fallback-btn {
-    display: inline-block;
-    background: var(--accent);
-    color: white;
-    border-radius: 8px;
-    padding: 7px 16px;
-    font-size: 13px; font-weight: 600;
-    cursor: pointer;
-    transition: background .2s;
-  }
-  .fallback-btn:hover { background: #ea6c0a; }
   .dismiss-btn {
     background: transparent;
     border: 1px solid var(--border);

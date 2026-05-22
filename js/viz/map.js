@@ -17,16 +17,51 @@ fetch(MAP_CONFIG.geoJsonUrl)
   .then(geo => { thaiGeoJSON = geo; renderProvinceBorders({}); })
   .catch(() => {});
 
-// ─── HEATMAP ──────────────────────────────────
-function renderHeatmap(data) {
-  if (heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
+// ─── MAP MODE TOGGLE ──────────────────────────
+function setMapMode(mode) {
+  mapMode = mode;
+  document.getElementById('btnHeat').classList.toggle('active',      mode === 'heat');
+  document.getElementById('btnHotspot').classList.toggle('active',   mode === 'hotspot');
+  document.getElementById('btnHotspotAI').classList.toggle('active', mode === 'hotspotAI');
 
+  if (mode === 'heat') {
+    _clearHotspot();
+    _renderHeat(filteredData);
+  } else if (mode === 'hotspot') {
+    _clearHeat();
+    _renderHotspot(filteredData, COL.vehicle);
+  } else {
+    _clearHeat();
+    _renderHotspot(filteredDataAI, COL.vehicleai);
+  }
+}
+
+// ─── PUBLIC ENTRY (called by dashboard.js) ────
+function renderHeatmap(data) {
   var deathMap = countBy(data, r => (r[COL.province] || '').trim() || null);
   renderProvinceBorders(deathMap);
 
+  if (mapMode === 'hotspot') {
+    _clearHeat();
+    _renderHotspot(data, COL.vehicle);
+  } else if (mapMode === 'hotspotAI') {
+    _clearHeat();
+    _renderHotspot(filteredDataAI, COL.vehicleai);
+  } else {
+    _clearHotspot();
+    _renderHeat(data);
+  }
+}
+
+// ─── HEAT LAYER ───────────────────────────────
+function _clearHeat() {
+  if (heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
+}
+
+function _renderHeat(data) {
+  _clearHeat();
   var [latMin, latMax] = MAP_CONFIG.latBounds;
   var [lngMin, lngMax] = MAP_CONFIG.lngBounds;
-
   var pts = [];
   data.forEach(function(r) {
     var lat = parseFloat(r[COL.lat]);
@@ -34,11 +69,69 @@ function renderHeatmap(data) {
     if (!isNaN(lat) && !isNaN(lng) && lat >= latMin && lat <= latMax && lng >= lngMin && lng <= lngMax)
       pts.push([lat, lng, 1]);
   });
-
   document.getElementById('mapCount').textContent = pts.length.toLocaleString() + ' จุด';
-  if (pts.length > 0) {
-    heatLayer = L.heatLayer(pts, MAP_CONFIG.heatOptions).addTo(map);
-  }
+  if (pts.length > 0) heatLayer = L.heatLayer(pts, MAP_CONFIG.heatOptions).addTo(map);
+}
+
+// ─── HOTSPOT LAYER (colored by vehicle type) ──
+function _clearHotspot() {
+  if (hotspotLayer)      { map.removeLayer(hotspotLayer);       hotspotLayer      = null; }
+  if (hotspotLegendCtrl) { map.removeControl(hotspotLegendCtrl); hotspotLegendCtrl = null; }
+}
+
+function _renderHotspot(data, col) {
+  _clearHotspot();
+  var [latMin, latMax] = MAP_CONFIG.latBounds;
+  var [lngMin, lngMax] = MAP_CONFIG.lngBounds;
+
+  var markers = [];
+  var presentTypes = {};
+
+  data.forEach(function(r) {
+    var lat = parseFloat(r[COL.lat]);
+    var lng = parseFloat(r[COL.lng]);
+    if (isNaN(lat) || isNaN(lng) || lat < latMin || lat > latMax || lng < lngMin || lng > lngMax) return;
+
+    var veh   = normalizeVehicle(r[col]);
+    var color = VEHICLE_COLOR_MAP[veh] || '#94a3b8';
+    presentTypes[veh] = color;
+
+    markers.push(
+      L.circleMarker([lat, lng], {
+        radius:      4,
+        fillColor:   color,
+        color:       'rgba(0,0,0,0.3)',
+        weight:      0.5,
+        fillOpacity: 0.75,
+      }).bindTooltip(
+        '<span style="font-family:Sarabun,sans-serif;font-size:12px;color:#f1f5f9">' + veh + '</span>',
+        { sticky: true, opacity: 0.95, className: 'prov-tooltip' }
+      )
+    );
+  });
+
+  document.getElementById('mapCount').textContent = markers.length.toLocaleString() + ' จุด';
+  hotspotLayer = L.layerGroup(markers).addTo(map);
+
+  // ── In-map legend ──
+  var HotspotLegend = L.Control.extend({
+    options: { position: 'bottomleft' },
+    onAdd: function() {
+      var div = L.DomUtil.create('div', 'map-hotspot-legend');
+      var entries = Object.entries(presentTypes)
+        .sort(function(a, b) { return a[0].localeCompare(b[0], 'th'); });
+      div.innerHTML =
+        '<div class="mhl-title">ประเภทยานพาหนะ</div>' +
+        entries.map(function(e) {
+          return '<div class="mhl-row">' +
+            '<span class="mhl-dot" style="background:' + e[1] + '"></span>' +
+            '<span class="mhl-name">' + e[0] + '</span>' +
+          '</div>';
+        }).join('');
+      return div;
+    }
+  });
+  hotspotLegendCtrl = new HotspotLegend().addTo(map);
 }
 
 // ─── PROVINCE BORDERS ─────────────────────────
@@ -84,7 +177,8 @@ function renderProvinceBorders(deathMap) {
     }
   }).addTo(map);
 
-  if (heatLayer) heatLayer.bringToFront();
+  if (heatLayer)    heatLayer.bringToFront();
+  if (hotspotLayer) hotspotLayer.bringToFront();
 }
 
 // ─── PRIVATE HELPER ───────────────────────────

@@ -9,9 +9,12 @@ let filteredDataBar = [];  // filtered by all filters EXCEPT province (for top-1
 let hierMap      = {};   // { province: { district: Set<subdistrict> } }
 
 // Leaflet layers
-let heatLayer = null;
-let geoLayer  = null;
-let thaiGeoJSON = null;
+let heatLayer          = null;
+let geoLayer           = null;
+let thaiGeoJSON        = null;
+let hotspotLayer       = null;
+let hotspotLegendCtrl  = null;
+let mapMode            = 'heat';   // 'heat' | 'hotspot'
 
 // Chart.js instances (destroyed & recreated on each render)
 let pieChart  = null;
