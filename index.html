@@ -92,26 +92,78 @@
 
   <div class="filter-group">
     <label style="font-size:12px;color:var(--muted)">จังหวัด</label>
-    <select id="provFilter"><option value="">ทั้งหมด</option></select>
+    <div class="ms-wrap" id="provWrap">
+      <button class="ms-btn" type="button" onclick="msToggle('prov',event)">
+        <span class="ms-label" id="provLabel">ทั้งหมด</span>
+        <svg class="ms-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="ms-drop" id="provDrop" onclick="event.stopPropagation()">
+        <div class="ms-actions">
+          <button class="ms-act-btn" onclick="msAll('prov')">เลือกทั้งหมด</button>
+          <button class="ms-act-btn" onclick="msClear('prov')">ล้าง</button>
+        </div>
+        <input class="ms-search" id="provSearch" type="text" placeholder="ค้นหา..." oninput="_msSearch('prov',this.value)" onclick="event.stopPropagation()">
+        <div class="ms-list" id="provList"></div>
+      </div>
+    </div>
   </div>
   <div class="filter-group">
     <label style="font-size:12px;color:var(--muted)">ยานพาหนะ</label>
-    <select id="vehicleFilter" onchange="applyFilter()"><option value="">ทั้งหมด</option></select>
+    <div class="ms-wrap" id="vehicleWrap">
+      <button class="ms-btn" type="button" onclick="msToggle('vehicle',event)">
+        <span class="ms-label" id="vehicleLabel">ทั้งหมด</span>
+        <svg class="ms-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="ms-drop" id="vehicleDrop" onclick="event.stopPropagation()">
+        <div class="ms-actions">
+          <button class="ms-act-btn" onclick="msAll('vehicle')">เลือกทั้งหมด</button>
+          <button class="ms-act-btn" onclick="msClear('vehicle')">ล้าง</button>
+        </div>
+        <input class="ms-search" id="vehicleSearch" type="text" placeholder="ค้นหา..." oninput="_msSearch('vehicle',this.value)" onclick="event.stopPropagation()">
+        <div class="ms-list" id="vehicleList"></div>
+      </div>
+    </div>
   </div>
   <div class="filter-group">
     <label style="font-size:12px;color:var(--muted)">อำเภอ</label>
-    <select id="distFilter"><option value="">ทั้งหมด</option></select>
+    <div class="ms-wrap" id="distWrap">
+      <button class="ms-btn" type="button" onclick="msToggle('dist',event)">
+        <span class="ms-label" id="distLabel">ทั้งหมด</span>
+        <svg class="ms-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="ms-drop" id="distDrop" onclick="event.stopPropagation()">
+        <div class="ms-actions">
+          <button class="ms-act-btn" onclick="msAll('dist')">เลือกทั้งหมด</button>
+          <button class="ms-act-btn" onclick="msClear('dist')">ล้าง</button>
+        </div>
+        <input class="ms-search" id="distSearch" type="text" placeholder="ค้นหา..." oninput="_msSearch('dist',this.value)" onclick="event.stopPropagation()">
+        <div class="ms-list" id="distList"></div>
+      </div>
+    </div>
   </div>
   <div class="filter-group">
     <label style="font-size:12px;color:var(--muted)">ตำบล</label>
-    <select id="subdistFilter" onchange="applyFilter()"><option value="">ทั้งหมด</option></select>
+    <div class="ms-wrap" id="subdistWrap">
+      <button class="ms-btn" type="button" onclick="msToggle('subdist',event)">
+        <span class="ms-label" id="subdistLabel">ทั้งหมด</span>
+        <svg class="ms-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="ms-drop" id="subdistDrop" onclick="event.stopPropagation()">
+        <div class="ms-actions">
+          <button class="ms-act-btn" onclick="msAll('subdist')">เลือกทั้งหมด</button>
+          <button class="ms-act-btn" onclick="msClear('subdist')">ล้าง</button>
+        </div>
+        <input class="ms-search" id="subdistSearch" type="text" placeholder="ค้นหา..." oninput="_msSearch('subdist',this.value)" onclick="event.stopPropagation()">
+        <div class="ms-list" id="subdistList"></div>
+      </div>
+    </div>
   </div>
   <button class="reset-btn" onclick="resetFilter()">รีเซ็ต</button>
 </div>
 
 <!-- ── MAIN GRID ── -->
 <div class="main-grid">
-  <div class="panel map-panel">
+  <div class="panel map-panel" id="mapPanel">
     <div class="panel-header">
       <div class="panel-title">
         <div class="panel-dot"></div>
@@ -124,6 +176,10 @@
           <button id="btnHotspotAI" class="ts-btn"        onclick="setMapMode('hotspotAI')">แยกประเภท AI</button>
         </div>
         <span class="panel-badge" id="mapCount">0 จุด</span>
+        <button class="expand-btn" id="mapExpandBtn" onclick="toggleMapExpand()" title="ขยาย">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+          <span>ขยาย</span>
+        </button>
       </div>
     </div>
     <div id="map"></div>

@@ -50,12 +50,12 @@ function buildHierMap(data) {
 
 function populateProvFilter(data) {
   var provs = [...new Set(data.map(r => r[COL.province]).filter(Boolean))].sort();
-  fillSelect('provFilter', provs);
+  msBuild('prov', provs);
 }
 
 function populateVehicleFilter(data) {
   var vehs = [...new Set(data.map(r => normalizeVehicle(r[COL.vehicle])).filter(Boolean))].sort();
-  fillSelect('vehicleFilter', vehs);
+  msBuild('vehicle', vehs);
 }
 
 function populateYearFilter(data) {
@@ -75,6 +75,7 @@ function populateYearFilter(data) {
 
 function fillSelect(id, values) {
   var sel = document.getElementById(id);
+  if (!sel) return;
   sel.innerHTML = '<option value="">ทั้งหมด</option>';
   values.forEach(function(v) {
     var o = document.createElement('option'); o.value = o.textContent = v; sel.appendChild(o);

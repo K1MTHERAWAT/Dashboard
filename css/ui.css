@@ -15,6 +15,34 @@
   .legend-count { color: var(--text); font-weight: 600; white-space: nowrap; }
   .legend-pct   { color: var(--muted); width: 38px; text-align: right; white-space: nowrap; }
 
+/* ── MAP PANEL EXPANDED STATE ── */
+  .map-panel.is-expanded {
+    position: fixed;
+    inset: 20px;
+    z-index: 2000;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+    box-shadow: 0 8px 40px rgba(0,0,0,.8);
+  }
+  .map-panel.is-expanded #map {
+    flex: 1;
+    min-height: 0;
+  }
+  .map-panel.is-expanded .expand-btn {
+    color: var(--text);
+    background: rgba(255,255,255,.08);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    gap: 6px;
+  }
+  .map-panel.is-expanded .expand-btn:hover {
+    background: rgba(255,255,255,.14);
+  }
+
 /* ── HOTSPOT MAP LEGEND ── */
   .map-hotspot-legend {
     background: rgba(11,17,32,.88);

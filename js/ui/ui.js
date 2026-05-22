@@ -47,6 +47,30 @@ function _pieEscHandler(e) {
   if (e.key === 'Escape') togglePieExpand();
 }
 
+// ─── MAP PANEL EXPAND ─────────────────────────
+var MAP_EXPAND_ICON   = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg><span>ขยาย</span>';
+var MAP_COLLAPSE_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg><span>ปิด</span>';
+
+function toggleMapExpand() {
+  var panel = document.getElementById('mapPanel');
+  var btn   = document.getElementById('mapExpandBtn');
+  var isExp = panel.classList.toggle('is-expanded');
+
+  btn.innerHTML = isExp ? MAP_COLLAPSE_ICON : MAP_EXPAND_ICON;
+
+  if (isExp) {
+    document.addEventListener('keydown', _mapEscHandler);
+  } else {
+    document.removeEventListener('keydown', _mapEscHandler);
+  }
+
+  setTimeout(function() { map.invalidateSize(); }, 50);
+}
+
+function _mapEscHandler(e) {
+  if (e.key === 'Escape') toggleMapExpand();
+}
+
 // ─── STATUS INDICATOR ─────────────────────────
 function updateStatus(active, count) {
   document.getElementById('statusDot').className = 'status-dot' + (active ? ' active' : '');
