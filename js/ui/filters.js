@@ -1,5 +1,5 @@
 // ─── MULTI-SELECT ENGINE ──────────────────────
-var _msSel = { prov: new Set(), vehicle: new Set(), dist: new Set(), subdist: new Set() };
+var _msSel = { region: new Set(), prov: new Set(), vehicle: new Set(), dist: new Set(), subdist: new Set() };
 
 function msToggle(id, ev) {
   if (ev) ev.stopPropagation();
@@ -64,16 +64,18 @@ function _msSync(id) {
 
 function _msChange(id) {
   _msSync(id);
-  if      (id === 'prov') buildDistrictFilter();
-  else if (id === 'dist') buildSubdistFilter();
+  if      (id === 'region') { buildProvFilter(); buildDistrictFilter(); }
+  else if (id === 'prov')   buildDistrictFilter();
+  else if (id === 'dist')   buildSubdistFilter();
   applyFilter();
 }
 
 function msAll(id) {
   document.getElementById(id + 'List').querySelectorAll('input').forEach(function(cb) { cb.checked = true; });
   _msSync(id);
-  if      (id === 'prov') buildDistrictFilter();
-  else if (id === 'dist') buildSubdistFilter();
+  if      (id === 'region') { buildProvFilter(); buildDistrictFilter(); }
+  else if (id === 'prov')   buildDistrictFilter();
+  else if (id === 'dist')   buildSubdistFilter();
   applyFilter();
 }
 
@@ -81,13 +83,33 @@ function msClear(id, silent) {
   document.getElementById(id + 'List').querySelectorAll('input').forEach(function(cb) { cb.checked = false; });
   _msSync(id);
   if (!silent) {
-    if      (id === 'prov') buildDistrictFilter();
-    else if (id === 'dist') buildSubdistFilter();
+    if      (id === 'region') { buildProvFilter(); buildDistrictFilter(); }
+    else if (id === 'prov')   buildDistrictFilter();
+    else if (id === 'dist')   buildSubdistFilter();
     applyFilter();
   }
 }
 
 function msGet(id) { return _msSel[id] || new Set(); }
+
+// ─── CASCADE: PROVINCE (from region) ──────────
+function buildProvFilter() {
+  var regSet = msGet('region');
+  var allProvs = [...new Set(rawData.map(function(r) {
+    return (r[COL.province] || '').trim();
+  }).filter(Boolean))].sort();
+  var provs;
+  if (!regSet.size) {
+    provs = allProvs;
+  } else {
+    var allowed = new Set();
+    regSet.forEach(function(reg) {
+      (REGION_PROV[reg] || []).forEach(function(p) { allowed.add(p); });
+    });
+    provs = allProvs.filter(function(p) { return allowed.has(p); });
+  }
+  msBuild('prov', provs);
+}
 
 // ─── CASCADE: DISTRICT ────────────────────────
 function buildDistrictFilter() {
@@ -134,10 +156,21 @@ function applyFilter() {
   var yr    = document.getElementById('yearFilter').value;
   var s     = document.getElementById('dateStart').value;
   var e     = document.getElementById('dateEnd').value;
-  var pvSet = msGet('prov');
-  var vhSet = msGet('vehicle');
-  var diSet = msGet('dist');
-  var sbSet = msGet('subdist');
+  var regSet = msGet('region');
+  var pvSet  = msGet('prov');
+  var vhSet  = msGet('vehicle');
+  var diSet  = msGet('dist');
+  var sbSet  = msGet('subdist');
+
+  // effective province set: explicit prov > region > none
+  var effectiveProv = new Set();
+  if (pvSet.size) {
+    pvSet.forEach(function(p) { effectiveProv.add(p); });
+  } else if (regSet.size) {
+    regSet.forEach(function(reg) {
+      (REGION_PROV[reg] || []).forEach(function(p) { effectiveProv.add(p); });
+    });
+  }
 
   function baseMatch(r) {
     var d = parseDate(r[COL.date]);
@@ -147,6 +180,7 @@ function applyFilter() {
       if (s && d < new Date(s))               return false;
       if (e && d > new Date(e + 'T23:59:59')) return false;
     }
+    if (effectiveProv.size && !effectiveProv.has((r[COL.province] || '').trim())) return false;
     if (diSet.size && !diSet.has((r[COL.district]    || '').trim())) return false;
     if (sbSet.size && !sbSet.has((r[COL.subdistrict] || '').trim())) return false;
     return true;
@@ -154,14 +188,12 @@ function applyFilter() {
 
   filteredData = rawData.filter(function(r) {
     if (!baseMatch(r)) return false;
-    if (pvSet.size && !pvSet.has((r[COL.province] || '').trim())) return false;
     if (vhSet.size && !vhSet.has(normalizeVehicle(r[COL.vehicle]))) return false;
     return true;
   });
 
   filteredDataAI = rawData.filter(function(r) {
     if (!baseMatch(r)) return false;
-    if (pvSet.size && !pvSet.has((r[COL.province] || '').trim())) return false;
     if (vhSet.size && !vhSet.has(normalizeVehicle(r[COL.vehicleai]))) return false;
     return true;
   });
@@ -181,6 +213,7 @@ function resetFilter() {
 
   document.getElementById('yearFilter').value = '';
   if (typeof clearCalendar === 'function') clearCalendar();
+  msClear('region',  true);
   msClear('prov',    true);
   msClear('vehicle', true);
   buildDistrictFilter(); // resets dist + subdist

@@ -4,6 +4,7 @@ function initDashboard(data) {
   filteredDataAI  = data;
   filteredDataBar = data;
   buildHierMap(data);
+  msBuild('region', Object.keys(REGION_PROV));
   populateProvFilter(data);
   populateVehicleFilter(data);
   populateYearFilter(data);

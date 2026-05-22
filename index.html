@@ -91,6 +91,22 @@
   <input type="hidden" id="dateEnd"/>
 
   <div class="filter-group">
+    <label style="font-size:12px;color:var(--muted)">ภาค</label>
+    <div class="ms-wrap" id="regionWrap">
+      <button class="ms-btn" type="button" onclick="msToggle('region',event)">
+        <span class="ms-label" id="regionLabel">ทั้งหมด</span>
+        <svg class="ms-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="ms-drop" id="regionDrop" onclick="event.stopPropagation()">
+        <div class="ms-actions">
+          <button class="ms-act-btn" onclick="msAll('region')">เลือกทั้งหมด</button>
+          <button class="ms-act-btn" onclick="msClear('region')">ล้าง</button>
+        </div>
+        <div class="ms-list" id="regionList"></div>
+      </div>
+    </div>
+  </div>
+  <div class="filter-group">
     <label style="font-size:12px;color:var(--muted)">จังหวัด</label>
     <div class="ms-wrap" id="provWrap">
       <button class="ms-btn" type="button" onclick="msToggle('prov',event)">
