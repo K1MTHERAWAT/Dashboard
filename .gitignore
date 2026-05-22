@@ -2,7 +2,7 @@
 *.csv
 *.xlsx
 *.xls
-data/
+/data/
 
 # Upload script (contains API key)
 upload_to_supabase.py
