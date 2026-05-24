@@ -53,6 +53,13 @@ function renderHeatmap(data) {
   }
 }
 
+// ─── PROVINCE BOUNDS CHECK ────────────────────
+function _inProvBounds(lat, lng, prov) {
+  var b = PROV_BOUNDS[prov];
+  if (!b) return true;
+  return lat >= b[0] && lat <= b[1] && lng >= b[2] && lng <= b[3];
+}
+
 // ─── HEAT LAYER ───────────────────────────────
 function _clearHeat() {
   if (heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
@@ -64,9 +71,11 @@ function _renderHeat(data) {
   var [lngMin, lngMax] = MAP_CONFIG.lngBounds;
   var pts = [];
   data.forEach(function(r) {
-    var lat = parseFloat(r[COL.lat]);
-    var lng = parseFloat(r[COL.lng]);
-    if (!isNaN(lat) && !isNaN(lng) && lat >= latMin && lat <= latMax && lng >= lngMin && lng <= lngMax)
+    var lat  = parseFloat(r[COL.lat]);
+    var lng  = parseFloat(r[COL.lng]);
+    var prov = (r[COL.province] || '').trim();
+    if (!isNaN(lat) && !isNaN(lng) && lat >= latMin && lat <= latMax && lng >= lngMin && lng <= lngMax
+        && _inProvBounds(lat, lng, prov))
       pts.push([lat, lng, 1]);
   });
   document.getElementById('mapCount').textContent = pts.length.toLocaleString() + ' จุด';
@@ -88,9 +97,11 @@ function _renderHotspot(data, col) {
   var presentTypes = {};
 
   data.forEach(function(r) {
-    var lat = parseFloat(r[COL.lat]);
-    var lng = parseFloat(r[COL.lng]);
+    var lat  = parseFloat(r[COL.lat]);
+    var lng  = parseFloat(r[COL.lng]);
+    var prov = (r[COL.province] || '').trim();
     if (isNaN(lat) || isNaN(lng) || lat < latMin || lat > latMax || lng < lngMin || lng > lngMax) return;
+    if (!_inProvBounds(lat, lng, prov)) return;
 
     var veh   = normalizeVehicle(r[col]);
     var color = VEHICLE_COLOR_MAP[veh] || '#94a3b8';
