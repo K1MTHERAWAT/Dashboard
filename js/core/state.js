@@ -12,6 +12,7 @@ let hierMap      = {};   // { province: { district: Set<subdistrict> } }
 let heatLayer          = null;
 let geoLayer           = null;
 let thaiGeoJSON        = null;
+let provPolygonMap     = {};   // { normalizedProvName: [[ring, ...], ...] } built from GeoJSON
 let hotspotLayer       = null;
 let hotspotLegendCtrl  = null;
 let mapMode            = 'heat';   // 'heat' | 'hotspot'
